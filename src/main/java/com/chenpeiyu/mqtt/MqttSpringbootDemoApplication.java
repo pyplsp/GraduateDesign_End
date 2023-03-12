@@ -8,6 +8,7 @@ public class MqttSpringbootDemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MqttSpringbootDemoApplication.class, args);
+        System.out.println("tst");
     }
 
 }
