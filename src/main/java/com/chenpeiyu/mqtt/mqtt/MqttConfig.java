@@ -18,11 +18,17 @@ import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
+import javax.annotation.Resource;
+
 @Configuration
 public class MqttConfig {
 
     @Autowired
     private TestMapper testMapper;
+
+
+    @Resource
+    private MqttGateway mqttGateway;
 
     /**
      * 创建MqttPahoClientFactory，设置MQTT Broker连接属性，如果使用SSL验证，也在这里设置。
@@ -34,8 +40,9 @@ public class MqttConfig {
         MqttConnectOptions options = new MqttConnectOptions();
 
         // 设置代理端的URL地址，可以是多个
-        options.setServerURIs(new String[]{"tcp://127.0.0.1:1883"});
-
+        options.setServerURIs(new String[]{"tcp://211.159.225.217:1883"});
+        options.setUserName("admin");
+        options.setPassword("admin".toCharArray());
         factory.setConnectionOptions(options);
         return factory;
     }
@@ -74,16 +81,20 @@ public class MqttConfig {
     public MessageHandler handler() {
         return message -> {
             String payload = message.getPayload().toString();
-
+            System.out.println("payload:" + message.getPayload());
+            System.out.println("headers:" + message.getHeaders());
             // byte[] bytes = (byte[]) message.getPayload(); // 收到的消息是字节格式
             String topic = message.getHeaders().get("mqtt_receivedTopic").toString();
             // 根据主题分别进行消息处理。
-            if (topic.matches(".+/sensor")) { // 匹配：1/sensor
+            if (topic.matches("test/sensor")) { // 匹配：1/sensor
                 String sensorSn = topic.split("/")[0];
-
                 Test t = JSON.parseObject(payload,Test.class);
-                testMapper.insert(t);
+                // testMapper.insert(t);
                 System.out.println("传感器" + sensorSn + ": 的消息： " + payload);
+                Test t2 = new Test();
+                t2.setId(6844);
+                t2.setName("6161odshfa");
+                mqttGateway.sendToMqtt("soft/sensor",JSON.toJSONString(t2));
             } else if (topic.equals("collector")) {
                 System.out.println("采集器的消息：" + payload);
             } else {
