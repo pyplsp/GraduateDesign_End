@@ -1,4 +1,4 @@
-package com.chenpeiyu.mqtt.domain;
+package com.chenpeiyu.mqtt.mqtt;
 
 public class MyMessage {
     private String topic;

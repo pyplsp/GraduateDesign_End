@@ -1,7 +1,7 @@
 package com.chenpeiyu.mqtt.mqtt;
 
 import com.alibaba.fastjson.JSON;
-import com.chenpeiyu.mqtt.Dao.TestMapper;
+import com.chenpeiyu.mqtt.dao.TestMapper;
 import com.chenpeiyu.mqtt.domain.Test;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Autowired;

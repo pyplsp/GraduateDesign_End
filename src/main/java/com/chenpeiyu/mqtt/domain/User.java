@@ -1,16 +1,19 @@
 package com.chenpeiyu.mqtt.domain;
 
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("test")
-public class Test {
+@TableName("user")
+public class User {
     @TableId(type = IdType.AUTO)
-    private Integer id;
-    private String name;
-
+    Integer id;
+    String account;
+    String password;
+    String unitName;
+    Integer ifAdministrators;
+    Integer phoneNumber;
+    String description;
 }

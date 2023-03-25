@@ -1,6 +1,6 @@
 package com.chenpeiyu.mqtt.controller;
 
-import com.chenpeiyu.mqtt.domain.MyMessage;
+import com.chenpeiyu.mqtt.mqtt.MyMessage;
 import com.chenpeiyu.mqtt.mqtt.MqttGateway;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

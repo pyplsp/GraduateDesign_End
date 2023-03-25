@@ -1,4 +1,4 @@
-package com.chenpeiyu.mqtt.Dao;
+package com.chenpeiyu.mqtt.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chenpeiyu.mqtt.domain.Test;
