@@ -8,12 +8,12 @@ import lombok.Data;
 @Data
 @TableName("lift")
 public class Lift {
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "id",type = IdType.AUTO)
     Integer id;
     Integer userId;
     String liftCode;
     String liftName;
-    String liftType;
+    String liftTypeId;
     double positionX;
     double positionY;
     Integer internetStatus;

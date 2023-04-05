@@ -13,27 +13,21 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     UserService userService;
 
-    @GetMapping("/test")
-    public String test(HttpServletRequest request){
-        System.out.println(request.getAttribute("id"));
-        return "成功";
-    }
-
     @PostMapping("/login")
-    public Result login(@RequestParam("account") String account, @RequestParam("password") String password) {
+    public Result<Object> login(@RequestParam("account") String account, @RequestParam("password") String password) {
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
-        queryWrapper.ge(User::getAccount, account).ge(User::getPassword,password);
+        queryWrapper.eq(User::getAccount, account).eq(User::getPassword,password);
         User user = userService.getOne(queryWrapper);
         if(user != null){
             return Result.success(JwtUtils.createToken(user.getId(), account,password));
         }else{
-            return Result.fail("错误");
+            return Result.fail("账号或密码错位");
         }
     }
 

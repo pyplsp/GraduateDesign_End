@@ -12,11 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 如果是登录请求，则通过
-        if ("/user/login".equals(request.getRequestURI())) {
+        if ("/api/user/login".equals(request.getRequestURI())) {
             return true;
         }
         // 获取请求头中的Token
