@@ -1,5 +1,7 @@
 package com.chenpeiyu.mqtt.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.chenpeiyu.mqtt.domain.User;
@@ -20,18 +22,17 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/login")
-    public Result<Object> login(@RequestParam("account") String account, @RequestParam("password") String password) {
+    public Result<Object> login(@RequestBody String json) {
+        JSONObject jsonObj = JSON.parseObject(json);
+        String account = (String) jsonObj.get("account");
+        String password = (String) jsonObj.get("password");
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(User::getAccount, account).eq(User::getPassword,password);
         User user = userService.getOne(queryWrapper);
         if(user != null){
-            return Result.success(JwtUtils.createToken(user.getId(), account,password));
+            return Result.success(JwtUtils.createToken(user.getId(), account, password));
         }else{
-            return Result.fail("账号或密码错位");
+            return Result.fail("账号或密码错误");
         }
     }
-
-
-
-
 }
