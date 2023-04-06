@@ -21,5 +21,4 @@ public class MqttController {
         mqttGateway.sendToMqtt(myMessage.getTopic(), 1, myMessage.getContent());
         return "send topic: " + myMessage.getTopic()+ ", message : " + myMessage.getContent();
     }
-
 }
