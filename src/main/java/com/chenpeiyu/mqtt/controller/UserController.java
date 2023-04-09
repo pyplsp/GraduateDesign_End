@@ -11,9 +11,6 @@ import com.chenpeiyu.mqtt.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -21,6 +18,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    // 登录
     @PostMapping("/login")
     public Result<Object> login(@RequestBody String json) {
         JSONObject jsonObj = JSON.parseObject(json);
@@ -30,9 +28,19 @@ public class UserController {
         queryWrapper.eq(User::getAccount, account).eq(User::getPassword,password);
         User user = userService.getOne(queryWrapper);
         if(user != null){
-            return Result.success(JwtUtils.createToken(user.getId(), account, password));
+            JSONObject result = new JSONObject();
+            result.put("Authorization",JwtUtils.createToken(user.getId(), account, password));
+            if(user.getId() == 1)
+                result.put("Administrator",1);
+            else
+                result.put("Administrator",0);
+            return Result.success(result);
         }else{
             return Result.fail("账号或密码错误");
         }
     }
+
+
+
+
 }

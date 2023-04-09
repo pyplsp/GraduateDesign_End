@@ -24,7 +24,7 @@ public class LiftController {
     @GetMapping("/{id}")
     public Result<Object> getLiftById(@PathVariable Integer id){
         try {
-            if( baseUtils.getIdentity()!= 1){
+            if( baseUtils.getIdentity()!= 1 ){
                 // 非主账号
                 LambdaQueryWrapper<Lift> queryWrapper = Wrappers.lambdaQuery();
                 queryWrapper.eq(Lift::getId,id).eq(Lift::getUserId,baseUtils.getIdentity());
@@ -46,20 +46,27 @@ public class LiftController {
                                      @RequestParam("current") Integer current){
         // 模糊查询的条件
         JSONObject jsonObject = JSONObject.parseObject(json);
-        Integer userId = jsonObject.getIntValue("userId");
-        Integer liftTypeId = jsonObject.getIntValue("liftTypeId");
-        String liftCode = jsonObject.getString("liftCode");
-        String liftName = jsonObject.getString("liftName");
+        Integer userId = jsonObject.getIntValue("userId"); // 若无返回0
+        Integer liftTypeId = jsonObject.getIntValue("liftTypeId"); // 若无返回0
+        String liftCode = jsonObject.getString("liftCode"); //若无返回null
+        String liftName = jsonObject.getString("liftName"); //若无返回null
         try {
             LambdaQueryWrapper<Lift> queryWrapper = Wrappers.lambdaQuery();
-            if (userId != 0)
-                // userId不为0说明前端有传确切的userId
-                queryWrapper.like(Lift::getUserId,userId);
-            if(liftTypeId != 0)
-                // liftTypeId不为0说明前端有传确切的liftTypeId
+            if( baseUtils.getIdentity()!= 1 ){
+                // 非主账号
+                queryWrapper.eq(Lift::getUserId,baseUtils.getIdentity()); //非主账号只能查看自己社区的电梯
+            }else{
+                // 主账号
+                if (userId != 0)
+                    // userId不为0说明前端有传确切的userId
+                    queryWrapper.like(Lift::getUserId,userId);
+            }
+            if(liftTypeId != 0){
                 queryWrapper.like(Lift::getLiftTypeId,liftTypeId);
+            }
+            // liftTypeId不为0说明前端有传确切的liftTypeId
             queryWrapper.like(Lift::getLiftCode,liftCode)
-                    .like(Lift::getLiftName,liftName);
+                .like(Lift::getLiftName,liftName);
             Page<Lift> page = new Page<>(current, size);
             if( baseUtils.getIdentity()!= 1){
                 // 子账号
