@@ -32,7 +32,7 @@ public class GlobalCorsConfig {
         config.addExposedHeader("Access-Control-Request-Headers");
 
         //添加映射路径，“/**”表示对所有的路径实行全局跨域访问权限的设置
-        UrlBasedCorsConfigurationSource configSource = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource configSource = new UrlBasedCorsConfigurationSource();   
         configSource.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(configSource);
