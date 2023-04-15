@@ -1,9 +1,6 @@
 package com.chenpeiyu.mqtt.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chenpeiyu.mqtt.domain.Lift;
 import com.chenpeiyu.mqtt.service.LiftService;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
@@ -57,12 +54,13 @@ public class LiftController {
     @PostMapping
     public Result<Object> createLift(@RequestBody Lift lift){
         try{
+            lift.setUserId(baseUtils.getIdentity());
             liftService.save(lift);
             return Result.success("添加成功");
         }catch (Exception e){
             e.printStackTrace();
         }
-        return Result.success("添加失败");
+        return Result.fail("添加失败");
     }
 
     // 删除电梯
@@ -74,7 +72,7 @@ public class LiftController {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return Result.success("失败");
+        return Result.fail("失败");
     }
 
     // 更新电梯
@@ -82,12 +80,24 @@ public class LiftController {
     public Result<Object> updateLift(@PathVariable Integer id,@RequestBody Lift lift){
         try {
             lift.setId(id);
+            lift.setUserId(baseUtils.getIdentity());
             liftService.updateById(lift);
             return Result.success("更新成功");
         }catch (Exception e){
             e.printStackTrace();
         }
-        return Result.success("更新失败");
+        return Result.fail("更新失败");
+    }
+
+    // 查询所有经纬度
+    @GetMapping("/liftPosition")
+    public Result<Object> liftPosition(){
+        try {
+            return Result.success(liftService.pySelectPosition(baseUtils.getIdentity()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("位置查询失败");
     }
 
 }

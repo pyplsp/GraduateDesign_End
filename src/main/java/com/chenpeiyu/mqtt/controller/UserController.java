@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.chenpeiyu.mqtt.domain.User;
 import com.chenpeiyu.mqtt.service.UserService;
+import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.chenpeiyu.mqtt.utils.JwtUtils;
 import com.chenpeiyu.mqtt.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
+    @Autowired
+    private BaseUtils baseUtils;
     @Autowired
     UserService userService;
 
@@ -38,6 +41,17 @@ public class UserController {
         }else{
             return Result.fail("账号或密码错误");
         }
+    }
+
+    @GetMapping("/unitName")
+    public Result<Object> unitName(){
+        try {
+            if (userService.pySelectUnitName(baseUtils.getIdentity()) != null)
+                return Result.success(userService.pySelectUnitName(baseUtils.getIdentity()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("查询错误");
     }
 
 }

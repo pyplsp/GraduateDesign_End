@@ -1,5 +1,6 @@
 package com.chenpeiyu.mqtt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,6 +13,9 @@ import com.chenpeiyu.mqtt.service.LiftService;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements LiftService {
@@ -61,5 +65,15 @@ public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements Li
                 .like(Lift::getLiftName,liftName);
 
         return liftMapper.selectJoinPage(new Page<>(current,size), LiftDto.class,queryWrapper);
+    }
+
+    @Override
+    public List<Map<String,Object>> pySelectPosition(Integer _identity) {
+        LambdaQueryWrapper<Lift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.select(Lift::getId,Lift::getPositionX,Lift::getPositionY);
+        if(_identity != 1){
+            lambdaQueryWrapper.ge(Lift::getUserId,_identity);
+        }
+        return liftMapper.selectMaps(lambdaQueryWrapper);
     }
 }
