@@ -1,8 +1,9 @@
 package com.chenpeiyu.mqtt.mqtt;
 
 import com.alibaba.fastjson.JSON;
-import com.chenpeiyu.mqtt.dao.TestMapper;
-import com.chenpeiyu.mqtt.domain.Test;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.chenpeiyu.mqtt.dao.LiftMapper;
+import com.chenpeiyu.mqtt.domain.Lift;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,13 +20,12 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 @Configuration
 public class MqttConfig {
-
     @Autowired
-    private TestMapper testMapper;
-
+    private LiftMapper liftMapper;
 
     @Resource
     private MqttGateway mqttGateway;
@@ -61,8 +61,7 @@ public class MqttConfig {
     @Bean
     public MessageProducer inbound() {
         // Paho客户端消息驱动通道适配器，主要用来订阅主题
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("consumerClient-paho",
-                mqttClientFactory(), "boat", "collector", "battery", "+/sensor");
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("consumerClient-paho", mqttClientFactory(), "TOPIC_COMMON");
         adapter.setCompletionTimeout(5000);
 
         // Paho消息转换器
@@ -70,7 +69,7 @@ public class MqttConfig {
         // 按字节接收消息
         // defaultPahoMessageConverter.setPayloadAsBytes(true);
         adapter.setConverter(defaultPahoMessageConverter);
-        adapter.setQos(1); // 设置QoS
+        // adapter.setQos(1); // 设置QoS
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
     }
@@ -81,24 +80,28 @@ public class MqttConfig {
     public MessageHandler handler() {
         return message -> {
             String payload = message.getPayload().toString();
-            System.out.println("payload:" + message.getPayload());
-            System.out.println("headers:" + message.getHeaders());
-            // byte[] bytes = (byte[]) message.getPayload(); // 收到的消息是字节格式
-            String topic = message.getHeaders().get("mqtt_receivedTopic").toString();
-            // 根据主题分别进行消息处理。
-            if (topic.matches("test/sensor")) { // 匹配：1/sensor
-                String sensorSn = topic.split("/")[0];
-                Test t = JSON.parseObject(payload,Test.class);
-                // testMapper.insert(t);
-                System.out.println("传感器" + sensorSn + ": 的消息： " + payload);
-                Test t2 = new Test();
-                t2.setId(6844);
-                t2.setName("6161odshfa");
-                mqttGateway.sendToMqtt("soft/sensor",JSON.toJSONString(t2));
-            } else if (topic.equals("collector")) {
-                System.out.println("采集器的消息：" + payload);
-            } else {
-                System.out.println("丢弃消息：主题[" + topic  + "]，负载：" + payload);
+            String dataType = JSON.parseObject(payload).getString("dataType");
+            if(Objects.equals(dataType, "alarm")){
+                // 告警数据里的设备代码
+                String liftIDNo = JSON.parseObject(payload).getString("liftIDNo");
+                // 通过设备代码查询用户id
+                LambdaQueryWrapper<Lift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.eq(Lift::getLiftCode,liftIDNo);
+                try {
+                    // 将消息发送出去 ALARM/用户id
+                    Integer userId = liftMapper.selectOne(lambdaQueryWrapper).getUserId();
+                    mqttGateway.sendToMqtt("ALARM/" + userId,payload);
+
+                    // 保存告警记录
+                    // ...
+
+
+                }catch (Exception e){
+
+                }
+            } else if (Objects.equals(dataType, "realTime")) {
+                // 将消息发送出去 REALTIME/消息携带的 wsSessionId
+                mqttGateway.sendToMqtt("REALTIME/" + JSON.parseObject(payload).getString("wsSessionId"),payload);
             }
 
         };
