@@ -38,7 +38,7 @@ public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements Li
 
     @Override
     public IPage<LiftDto> pySelectPage(Integer _identity,
-                                       Integer userId, Integer liftTypeId, String liftCode, String liftName,
+                                       Integer userId, Integer liftTypeId, String liftCode, String liftName,Integer internetStatus,
                                        Integer size, Integer current) {
         MPJLambdaWrapper<Lift> queryWrapper = new MPJLambdaWrapper<Lift>().selectAll(Lift.class)
                 .select(LiftType::getLiftTypeName)
@@ -54,7 +54,10 @@ public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements Li
             if (userId != 0)
                 // userId不为0说明前端有传确切的userId
                 queryWrapper.like(Lift::getUserId,userId);
-
+        // 不为零，查有物联网的电梯
+        if(internetStatus !=0 ){
+            queryWrapper.eq(Lift::getInternetStatus,internetStatus);
+        }
         // liftTypeId不为0说明前端有传确切的liftTypeId
         if(liftTypeId != 0){
             queryWrapper.like(Lift::getLiftTypeId,liftTypeId);

@@ -13,7 +13,7 @@ public interface LiftService extends IService<Lift> {
     LiftDto pySelectOne(Integer _identity,Integer liftId);
 
    IPage<LiftDto> pySelectPage(Integer _identity,
-                               Integer userId, Integer liftTypeId, String liftCode, String liftName,
+                               Integer userId, Integer liftTypeId, String liftCode, String liftName,Integer internetStatus,
                                Integer size, Integer current);
 
     List<Map<String,Object>> pySelectPosition(Integer _identity);

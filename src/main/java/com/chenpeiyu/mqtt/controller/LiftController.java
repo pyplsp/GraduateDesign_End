@@ -37,12 +37,13 @@ public class LiftController {
         JSONObject jsonObject = JSONObject.parseObject(json);
         Integer userId = jsonObject.getIntValue("userId"); // 若无返回0
         Integer liftTypeId = jsonObject.getIntValue("liftTypeId"); // 若无返回0
+        Integer internetStatus = jsonObject.getIntValue("internetStatus"); // (规定必须传)若无返回0
         String liftCode = jsonObject.getString("liftCode"); //若无返回null
         String liftName = jsonObject.getString("liftName"); //若无返回null
         try {
             return Result.success(
                     liftService.pySelectPage(baseUtils.getIdentity()
-                    ,userId,liftTypeId,liftCode,liftName,
+                    ,userId,liftTypeId,liftCode,liftName,internetStatus,
                     size,current));
         }catch (Exception e){
             e.printStackTrace();

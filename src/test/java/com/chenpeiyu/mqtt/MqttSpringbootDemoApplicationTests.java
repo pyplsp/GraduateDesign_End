@@ -6,10 +6,13 @@ import com.chenpeiyu.mqtt.domain.Lift;
 import com.chenpeiyu.mqtt.domain.LiftType;
 import com.chenpeiyu.mqtt.domain.User;
 import com.chenpeiyu.mqtt.domainiDto.LiftDto;
+import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.stream.BaseStream;
 
 @SpringBootTest
 class MqttSpringbootDemoApplicationTests {
@@ -17,8 +20,11 @@ class MqttSpringbootDemoApplicationTests {
     @Autowired
     LiftMapper liftMapper;
 
+    @Autowired
+    BaseUtils baseUtils;
+
     @Test
-    void contextLoads() {
+    void test1() {
         // 联表案例
         MPJLambdaWrapper<Lift> queryWrapper = new MPJLambdaWrapper<Lift>().selectAll(Lift.class)
                 .select(LiftType::getLiftTypeName)
@@ -29,5 +35,11 @@ class MqttSpringbootDemoApplicationTests {
         LiftDto liftDto = liftMapper.selectJoinOne(LiftDto.class,queryWrapper);
         System.out.println(liftDto);
     }
+
+    @Test
+    void test2(){
+        System.out.println(baseUtils.nowTime());
+    }
+
 
 }
