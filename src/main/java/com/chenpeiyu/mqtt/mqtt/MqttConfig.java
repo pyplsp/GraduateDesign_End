@@ -68,7 +68,7 @@ public class MqttConfig {
     public MessageProducer inbound() {
         // Paho客户端消息驱动通道适配器，主要用来订阅主题
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
-                "consumerClient-paho",
+                "springBoot_PY",
                 mqttClientFactory(),
                 "TOPIC_COMMON");
         adapter.setCompletionTimeout(5000);
@@ -120,6 +120,7 @@ public class MqttConfig {
                 String liftIDNo = JSON.parseObject(payload).getString("liftIDNo");
                 // 根据协议，接收到在线数据时要进行时间校准
                 JSONObject obj = new JSONObject();
+                obj.put("method","prooftime");
                 obj.put("prooftime", baseUtils.nowTime());
                 mqttGateway.sendToMqtt(liftIDNo,0,obj.toJSONString());
 

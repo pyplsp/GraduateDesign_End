@@ -33,10 +33,8 @@ public class UserController {
         if(user != null){
             JSONObject result = new JSONObject();
             result.put("Authorization",JwtUtils.createToken(user.getId(), account, password));
-            if(user.getId() == 1)
-                result.put("Administrator",1);
-            else
-                result.put("Administrator",0);
+            result.put("Administrator",user.getIfAdministrators());
+            result.put("userId",user.getId());
             return Result.success(result);
         }else{
             return Result.fail("账号或密码错误");
