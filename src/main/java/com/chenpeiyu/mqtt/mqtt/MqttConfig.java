@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chenpeiyu.mqtt.dao.AlarmMapper;
 import com.chenpeiyu.mqtt.dao.LiftMapper;
+import com.chenpeiyu.mqtt.domain.Alarm;
 import com.chenpeiyu.mqtt.domain.Lift;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -99,7 +100,8 @@ public class MqttConfig {
             // 接收摄像头告警数据
             if(Objects.equals(dataType, "alarm")){
                 // 告警数据里的设备代码
-                String liftIDNo = JSON.parseObject(payload).getString("liftIDNo");
+                JSONObject pojo = JSON.parseObject(payload);
+                String liftIDNo = pojo.getString("liftIDNo");
                 // 通过设备代码查询用户id
                 LambdaQueryWrapper<Lift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
                 lambdaQueryWrapper.eq(Lift::getLiftCode,liftIDNo);
@@ -109,12 +111,30 @@ public class MqttConfig {
                     mqttGateway.sendToMqtt("ALARM/" + userId,2,payload);
 
                     // 保存告警记录
-                    // ...
-
-
-
+                    if(pojo.getIntValue("alarmStatus") == 0){
+                        // 告警解除，更新数据
+                        LambdaUpdateWrapper<Alarm> updateWrapper = new LambdaUpdateWrapper<>();
+                        updateWrapper
+                                .eq(Alarm::getId,pojo.getString("alarmNo"))
+                                .set(Alarm::getAlarmStatus,0)
+                                .set(Alarm::getAlarmRemoveTime,pojo.getString("alarmTime"));
+                        alarmMapper.update(null,updateWrapper);
+                    }else{
+                        // 告警产生,增加数据
+                        Lift alarmLift = liftMapper.selectOne(new LambdaQueryWrapper<Lift>().eq(Lift::getLiftCode,pojo.getString("liftIDNo")));
+                        Alarm alarm = new Alarm();
+                        alarm.setId(pojo.getString("alarmNo"));
+                        alarm.setLiftId(alarmLift.getId());
+                        alarm.setAlarmTypeName(pojo.getString("alarmTypeName"));
+                        alarm.setAlarmTime(pojo.getString("alarmTime"));
+                        alarm.setAlarmStatus(pojo.getIntValue("alarmStatus"));
+                        alarm.setPersonNum(pojo.getIntValue("personNum"));
+                        alarm.setCurrFloor(pojo.getIntValue("currFloor"));
+                        alarm.setIfFlat(pojo.getIntValue("ifFlat"));
+                        alarmMapper.insert(alarm);
+                    }
                 }catch (Exception e){
-
+                    e.printStackTrace();
                 }
             } else if (Objects.equals(dataType, "realTime")) {
                 // 接收摄像头实时数据
