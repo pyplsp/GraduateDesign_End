@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.chenpeiyu.mqtt.dao.AlarmMapper;
 import com.chenpeiyu.mqtt.dao.LiftMapper;
 import com.chenpeiyu.mqtt.domain.Lift;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
@@ -30,6 +31,9 @@ public class MqttConfig {
     @Autowired
     private LiftMapper liftMapper;
 
+    @Autowired
+    private AlarmMapper alarmMapper;
+
     @Resource
     private MqttGateway mqttGateway;
 
@@ -39,7 +43,7 @@ public class MqttConfig {
     /**
      * 创建MqttPahoClientFactory，设置MQTT Broker连接属性，如果使用SSL验证，也在这里设置。
      * @return factory
-     */
+    */
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
@@ -107,6 +111,8 @@ public class MqttConfig {
                     // 保存告警记录
                     // ...
 
+
+
                 }catch (Exception e){
 
                 }
@@ -132,7 +138,7 @@ public class MqttConfig {
             }
 
         };
-    }
+    }   
 
     // 发送消息
 
