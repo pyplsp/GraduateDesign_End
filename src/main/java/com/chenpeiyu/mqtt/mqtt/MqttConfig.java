@@ -25,6 +25,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Configuration
@@ -112,26 +113,26 @@ public class MqttConfig {
 
                     // 保存告警记录
                     if(pojo.getIntValue("alarmStatus") == 0){
-                        // 告警解除，更新数据
+                        // 告警解除，更新数据，逻辑：
                         LambdaUpdateWrapper<Alarm> updateWrapper = new LambdaUpdateWrapper<>();
                         updateWrapper
                                 .eq(Alarm::getId,pojo.getString("alarmNo"))
                                 .set(Alarm::getAlarmStatus,0)
-                                .set(Alarm::getAlarmRemoveTime,pojo.getString("alarmTime"));
-                        alarmMapper.update(null,updateWrapper);
+                                .set(Alarm::getAlarmRemoveTime,Timestamp.valueOf(pojo.getString("alarmTime")));
+                        // alarmMapper.update(null,updateWrapper);
                     }else{
                         // 告警产生,增加数据
                         Lift alarmLift = liftMapper.selectOne(new LambdaQueryWrapper<Lift>().eq(Lift::getLiftCode,pojo.getString("liftIDNo")));
                         Alarm alarm = new Alarm();
-                        alarm.setId(pojo.getString("alarmNo"));
                         alarm.setLiftId(alarmLift.getId());
                         alarm.setAlarmTypeName(pojo.getString("alarmTypeName"));
-                        alarm.setAlarmTime(pojo.getString("alarmTime"));
+                        alarm.setAlarmTime(Timestamp.valueOf(pojo.getString("alarmTime")));
                         alarm.setAlarmStatus(pojo.getIntValue("alarmStatus"));
                         alarm.setPersonNum(pojo.getIntValue("personNum"));
                         alarm.setCurrFloor(pojo.getIntValue("currFloor"));
                         alarm.setIfFlat(pojo.getIntValue("ifFlat"));
-                        alarmMapper.insert(alarm);
+                        alarm.setAlarmTypeCode(pojo.getString("alarmTypeCode"));
+                        // alarmMapper.insert(alarm);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
