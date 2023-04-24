@@ -26,6 +26,7 @@ import org.springframework.messaging.MessageHandler;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Configuration
@@ -113,13 +114,15 @@ public class MqttConfig {
 
                     // 保存告警记录
                     if(pojo.getIntValue("alarmStatus") == 0){
-                        // 告警解除，更新数据，逻辑：
+                        // 告警解除，更新数据，逻辑：报解除时，解除当天的同样类型的告警
                         LambdaUpdateWrapper<Alarm> updateWrapper = new LambdaUpdateWrapper<>();
                         updateWrapper
-                                .eq(Alarm::getId,pojo.getString("alarmNo"))
-                                .set(Alarm::getAlarmStatus,0)
-                                .set(Alarm::getAlarmRemoveTime,Timestamp.valueOf(pojo.getString("alarmTime")));
-                        // alarmMapper.update(null,updateWrapper);
+                                .eq(Alarm::getAlarmTypeCode,pojo.getString("alarmTypeCode"))
+                                .gt(Alarm::getAlarmTime, LocalDate.now());
+                         Alarm alarm = new Alarm();
+                         alarm.setAlarmStatus(0);
+                         alarm.setAlarmRemoveTime(Timestamp.valueOf(pojo.getString("alarmTime")));
+                         alarmMapper.update(alarm,updateWrapper);
                     }else{
                         // 告警产生,增加数据
                         Lift alarmLift = liftMapper.selectOne(new LambdaQueryWrapper<Lift>().eq(Lift::getLiftCode,pojo.getString("liftIDNo")));
@@ -132,7 +135,7 @@ public class MqttConfig {
                         alarm.setCurrFloor(pojo.getIntValue("currFloor"));
                         alarm.setIfFlat(pojo.getIntValue("ifFlat"));
                         alarm.setAlarmTypeCode(pojo.getString("alarmTypeCode"));
-                        // alarmMapper.insert(alarm);
+                        alarmMapper.insert(alarm);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
