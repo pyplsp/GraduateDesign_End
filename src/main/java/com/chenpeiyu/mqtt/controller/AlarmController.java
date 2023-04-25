@@ -32,8 +32,28 @@ public class AlarmController {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return Result.fail("查询失败");
+    }
 
-        return null;
+    @GetMapping("/{alarmId}")
+    public Result<Object> searchAlarmOne(@PathVariable Integer alarmId){
+        try {
+            return  Result.success(alarmService.pySelectOne(baseUtils.getIdentity(),alarmId));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("查询失败");
+    }
+
+    @GetMapping("unlock/{alarmId}")
+    public Result<Object> unlockAlarm(@PathVariable Integer alarmId){
+        try {
+            alarmService.pyUnlockAlarm(baseUtils.getIdentity(),alarmId);
+            return Result.success("成功");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("失败");
     }
 
 }

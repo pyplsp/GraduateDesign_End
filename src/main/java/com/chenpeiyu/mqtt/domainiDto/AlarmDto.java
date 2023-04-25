@@ -25,6 +25,7 @@ public class AlarmDto {
     String alarmTypeCode;
 
     String liftCode;
+    Integer userId;
 
 
 }
