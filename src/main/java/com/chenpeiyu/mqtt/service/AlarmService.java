@@ -9,4 +9,8 @@ public interface AlarmService extends IService<Alarm> {
     IPage<AlarmDto> pySelectPage(Integer _identity,
                                  String liftCode, String alarmTypeName, Integer alarmStatus,
                                  Integer size, Integer current);
+
+    AlarmDto pySelectOne(Integer _identity,Integer liftId);
+
+    Alarm pyUnlockAlarm(Integer _identity,Integer alarmId);
 }

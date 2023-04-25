@@ -1,5 +1,6 @@
 package com.chenpeiyu.mqtt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,4 +36,27 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
                     .orderByDesc(Alarm::getAlarmTime); // 电梯设备代码，告警类型名称
         return alarmMapper.selectJoinPage(new Page<>(current,size), AlarmDto.class,queryWrapper);
     }
+
+    @Override
+    public AlarmDto pySelectOne(Integer _identity, Integer alarmId) {
+        MPJLambdaWrapper<Alarm> queryWrapper = new MPJLambdaWrapper<Alarm>().selectAll(Alarm.class)
+                .select(Lift::getLiftCode)
+                .leftJoin(Lift.class,Lift::getId,Alarm::getLiftId)
+                .leftJoin(User.class,User::getId,Lift::getUserId)
+                .eq(User::getId,_identity)
+                .eq(Alarm::getId,alarmId);
+        return alarmMapper.selectJoinOne(AlarmDto.class,queryWrapper);
+    }
+
+    @Override
+    public Alarm pyUnlockAlarm(Integer _identity, Integer alarmId) {
+
+
+//        LambdaUpdateWrapper<Alarm> queryWrapper = new LambdaUpdateWrapper<Alarm>()
+//                .eq(Alarm::getId,alarmId)
+//                .set(Alarm::getAlarmStatus,-1);
+        return null;
+    }
+
+
 }
