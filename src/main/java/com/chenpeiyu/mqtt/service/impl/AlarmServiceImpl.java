@@ -1,5 +1,6 @@
 package com.chenpeiyu.mqtt.service.impl;
 
+
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,6 +27,7 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
                                      Integer size, Integer current) {
         MPJLambdaWrapper<Alarm> queryWrapper = new MPJLambdaWrapper<Alarm>().selectAll(Alarm.class)
                 .select(Lift::getLiftCode)
+                .select(User::getId)
                 .leftJoin(Lift.class,Lift::getId,Alarm::getLiftId)
                 .leftJoin(User.class,User::getId,Lift::getUserId);
         queryWrapper.eq(User::getId,_identity);
@@ -39,24 +41,29 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
 
     @Override
     public AlarmDto pySelectOne(Integer _identity, Integer alarmId) {
-        MPJLambdaWrapper<Alarm> queryWrapper = new MPJLambdaWrapper<Alarm>().selectAll(Alarm.class)
-                .select(Lift::getLiftCode)
-                .leftJoin(Lift.class,Lift::getId,Alarm::getLiftId)
-                .leftJoin(User.class,User::getId,Lift::getUserId)
-                .eq(User::getId,_identity)
-                .eq(Alarm::getId,alarmId);
+        MPJLambdaWrapper<Alarm> queryWrapper = makeQueryWrapper(_identity,alarmId);
         return alarmMapper.selectJoinOne(AlarmDto.class,queryWrapper);
     }
 
     @Override
-    public Alarm pyUnlockAlarm(Integer _identity, Integer alarmId) {
-
-
-//        LambdaUpdateWrapper<Alarm> queryWrapper = new LambdaUpdateWrapper<Alarm>()
-//                .eq(Alarm::getId,alarmId)
-//                .set(Alarm::getAlarmStatus,-1);
-        return null;
+    public void pyUnlockAlarm(Integer _identity, Integer alarmId) {
+        MPJLambdaWrapper<Alarm> queryWrapper = makeQueryWrapper(_identity,alarmId);
+        queryWrapper.eq(Alarm::getAlarmStatus,1);
+        Integer i = alarmMapper.selectJoinOne(AlarmDto.class,queryWrapper).getId();
+        LambdaUpdateWrapper<Alarm> updateWrapper = new LambdaUpdateWrapper<Alarm>()
+                .eq(Alarm::getId,i)
+                .set(Alarm::getAlarmStatus,-1);
+        alarmMapper.update(null,updateWrapper);
     }
 
+    private MPJLambdaWrapper<Alarm> makeQueryWrapper(Integer _identity, Integer alarmId){
+        return  new MPJLambdaWrapper<Alarm>().selectAll(Alarm.class)
+                    .select(Lift::getLiftCode)
+                    .select("t2.id as userId") // 默认情况下 t alarm,t1 lift,t2 user
+                    .leftJoin(Lift.class,Lift::getId,Alarm::getLiftId)
+                    .leftJoin(User.class,User::getId,Lift::getUserId)
+                    .eq(User::getId,_identity)
+                    .eq(Alarm::getId,alarmId);
+    }
 
 }
