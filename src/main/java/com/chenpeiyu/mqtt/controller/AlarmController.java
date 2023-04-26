@@ -1,9 +1,6 @@
 package com.chenpeiyu.mqtt.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.chenpeiyu.mqtt.domain.Alarm;
 import com.chenpeiyu.mqtt.service.AlarmService;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.chenpeiyu.mqtt.utils.Result;
@@ -58,30 +55,5 @@ public class AlarmController {
         }
         return Result.fail("失败");
     }
-
-    @GetMapping("/{alarmId}")
-    public Result<Object> getAlarmById(@PathVariable Integer alarmId){
-        try {
-            return Result.success(alarmService.pySelectOne(baseUtils.getIdentity(),alarmId));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return Result.fail("获取详情失败");
-    }
-
-    @GetMapping("/unlock/{alarmId}")
-    public Result<Object> unlockAlarm(@PathVariable Integer alarmId){
-        try {
-            LambdaUpdateWrapper<Alarm> queryWrapper = new LambdaUpdateWrapper<Alarm>()
-                    .eq(Alarm::getId,alarmId)
-                    .set(Alarm::getAlarmStatus,-1);
-            alarmService.update(queryWrapper);
-            return Result.success("成功");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return Result.fail("失败");
-    }
-
 
 }
