@@ -18,4 +18,8 @@ public interface LiftService extends IService<Lift> {
 
     List<Map<String,Object>> pySelectPosition(Integer _identity);
 
+    Long pySelectAllLifts(Integer _identity);
+
+    Long pySelectAllInternet(Integer _identity);
+
 }

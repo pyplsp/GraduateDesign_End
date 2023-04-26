@@ -12,4 +12,7 @@ public interface AlarmService extends IService<Alarm> {
     AlarmDto pySelectOne(Integer _identity,Integer alarmId);
     void pyUnlockAlarm(Integer _identity, Integer alarmId);
 
+    public Long pySelectAllAlarm(Integer _identity);
+
+    public Long pySelectAllAlarmRemove(Integer _identity);
 }

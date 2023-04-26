@@ -51,13 +51,17 @@ public class LiftController {
         return Result.fail("未知错误");
     }
 
-    // 添加电梯
+    // 添加电梯 仅限子账户添加
     @PostMapping
     public Result<Object> createLift(@RequestBody Lift lift){
         try{
-            lift.setUserId(baseUtils.getIdentity());
-            liftService.save(lift);
-            return Result.success("添加成功");
+            if(baseUtils.getIdentity() != 1){
+                lift.setUserId(baseUtils.getIdentity());
+                liftService.save(lift);
+                return Result.success("添加成功");
+            }else{
+                return Result.success("添加失败，主账户不可添加电梯");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

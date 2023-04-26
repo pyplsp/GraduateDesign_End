@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @SpringBootTest
 class MqttSpringbootDemoApplicationTests {
@@ -47,6 +49,9 @@ class MqttSpringbootDemoApplicationTests {
     void test2(){
         // System.out.println(baseUtils.nowTime());
         System.out.println(LocalDate.now().toString());
+
+
+        System.out.println();
     }
 
     @Test

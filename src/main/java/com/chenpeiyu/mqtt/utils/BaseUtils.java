@@ -22,4 +22,9 @@ public class BaseUtils {
         Date currentTime = new Date();
         return formatter.format(currentTime);
     }
+
+    public String getNow(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(new Date());
+    }
 }

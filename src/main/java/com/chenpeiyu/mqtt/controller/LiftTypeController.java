@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/liftType")
-public class liftTypeController {
+public class LiftTypeController {
     @Autowired
     private BaseUtils baseUtils;
 

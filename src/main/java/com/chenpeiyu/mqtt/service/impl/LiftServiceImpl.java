@@ -79,4 +79,25 @@ public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements Li
         }
         return liftMapper.selectMaps(lambdaQueryWrapper);
     }
+
+    @Override
+    public Long pySelectAllLifts(Integer _identity) {
+        MPJLambdaWrapper<Lift> mpjLambdaWrapper = new MPJLambdaWrapper<Lift>()
+                .leftJoin(Lift.class,Lift::getUserId,User::getId);
+        if(_identity != 1)
+            mpjLambdaWrapper.eq(User::getId,_identity);
+        return liftMapper.selectJoinCount(mpjLambdaWrapper);
+    }
+
+    @Override
+    public Long pySelectAllInternet(Integer _identity) {
+        MPJLambdaWrapper<Lift> mpjLambdaWrapper = new MPJLambdaWrapper<Lift>()
+                .leftJoin(Lift.class,Lift::getUserId,User::getId)
+                .eq(Lift::getInternetStatus,1);
+        if(_identity != 1)
+            mpjLambdaWrapper.eq(User::getId,_identity);
+        return liftMapper.selectJoinCount(mpjLambdaWrapper);
+    }
+
+
 }

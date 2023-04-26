@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class JwtUtils {
 
-    public static final long EXPIRATION_TIME = 3600000; // 1 小时
+    public static final long EXPIRATION_TIME = 3600000*5; // 1 小时
     public static final String SECRET_KEY = "duLk1351Moon58oi5ee9Rr5gt2eR151nf5oNe14522wor1Ngn858SD6KJbi8os";
 
     public static String createToken(Integer id,String account, String password) {
