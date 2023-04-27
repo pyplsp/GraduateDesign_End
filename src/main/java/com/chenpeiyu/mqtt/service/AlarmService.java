@@ -26,4 +26,4 @@ public interface AlarmService extends IService<Alarm> {
 
     List<HashMap<String,Object>> pySelectAlarmTender(Integer _identity);
 
-}
+    public List<HashMap<String,Object>> pySelectAlarmRemoveTender(Integer _identity);}

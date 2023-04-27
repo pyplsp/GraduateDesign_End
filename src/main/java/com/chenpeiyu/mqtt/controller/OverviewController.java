@@ -40,13 +40,13 @@ public class OverviewController {
         overviewMap.put("alarmNum",alarmService.pySelectAllAlarm(_identity));
         overviewMap.put("alarmRemoveNum",alarmService.pySelectAllAlarmRemove(_identity));
         // 饼图
-        overviewMap.put("liftTypePIe",liftService.pySelectLIftTypePie(_identity));
+        overviewMap.put("liftTypePie",liftService.pySelectLIftTypePie(_identity));
         overviewMap.put("alarmTypePie",alarmService.pySelectLAlarmTypePie(_identity));
         overviewMap.put("alarmStatusPie",alarmService.pySelectLAlarmStatusPie(_identity));
         // 趋势图
         overviewMap.put("alarmTender",alarmService.pySelectAlarmTender(_identity));
-
-
+        overviewMap.put("alarmRemoveTender",alarmService.pySelectAlarmRemoveTender(_identity));
+        // 返回结果
         return Result.success(overviewMap);
     }
 }

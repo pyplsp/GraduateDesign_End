@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chenpeiyu.mqtt.dao.AlarmMapper;
@@ -108,14 +109,31 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
     @Override
     public List<HashMap<String,Object>> pySelectAlarmTender(Integer _identity) {
         List<HashMap<String,Object>> list = new ArrayList<>();
-        for (int i = 0; i<7; i++){
+        for (int i = 6; i>=0; i--){
             HashMap<String,Object> map= new HashMap<>();
             String[] s = baseUtils.getLastXDays(i);
             MPJLambdaWrapper<Alarm> mpjLambdaWrapper = makeQueryWrapperOnlyJoin()
                     .between(Alarm::getAlarmTime,s[0],s[1]);
             if (_identity !=1)
                 mpjLambdaWrapper.eq(User::getId,_identity);
-            map.put("date",s[0]);
+            map.put("date",s[0].substring(0,10));
+            map.put("count",alarmMapper.selectCount(mpjLambdaWrapper));
+            list.add(map);
+        }
+        return list;
+    }
+
+    @Override
+    public List<HashMap<String, Object>> pySelectAlarmRemoveTender(Integer _identity) {
+        List<HashMap<String,Object>> list = new ArrayList<>();
+        for (int i = 6; i>=0; i--){
+            HashMap<String,Object> map= new HashMap<>();
+            String[] s = baseUtils.getLastXDays(i);
+            MPJLambdaWrapper<Alarm> mpjLambdaWrapper = makeQueryWrapperOnlyJoin()
+                    .between(Alarm::getAlarmRemoveTime,s[0],s[1]);
+            if (_identity !=1)
+                mpjLambdaWrapper.eq(User::getId,_identity);
+            map.put("date",s[0].substring(0,10));
             map.put("count",alarmMapper.selectCount(mpjLambdaWrapper));
             list.add(map);
         }
