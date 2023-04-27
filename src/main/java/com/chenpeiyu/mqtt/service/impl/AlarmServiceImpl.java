@@ -1,7 +1,7 @@
 package com.chenpeiyu.mqtt.service.impl;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,8 +16,8 @@ import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements AlarmService {
@@ -62,7 +62,7 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
         LambdaUpdateWrapper<Alarm> updateWrapper = new LambdaUpdateWrapper<Alarm>()
                 .eq(Alarm::getId,i)
                 .set(Alarm::getAlarmStatus,-1)
-                .set(Alarm::getAlarmRemoveTime, Timestamp.valueOf(baseUtils.getNow()));
+                .set(Alarm::getAlarmRemoveTime, Timestamp.valueOf(baseUtils.nowTime()));
         alarmMapper.update(null,updateWrapper);
     }
     @Override
@@ -82,6 +82,46 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
             mpjLambdaWrapper.eq(User::getId,_identity);
         return alarmMapper.selectJoinCount(mpjLambdaWrapper);
     }
+
+    @Override
+    public List<Map<String, Object>> pySelectLAlarmTypePie(Integer _identity) {
+        MPJLambdaWrapper<Alarm> lambdaQueryWrapper = makeQueryWrapperOnlyJoin();
+        lambdaQueryWrapper.select("count(*) as count")
+                .select(Alarm::getAlarmTypeName)
+                .groupBy(Alarm::getAlarmTypeName);
+        if (_identity !=1)
+            lambdaQueryWrapper.eq(User::getId,_identity);
+        return alarmMapper.selectMaps(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<Map<String, Object>> pySelectLAlarmStatusPie(Integer _identity) {
+        MPJLambdaWrapper<Alarm> lambdaQueryWrapper = makeQueryWrapperOnlyJoin();
+        lambdaQueryWrapper.select("count(*) as count")
+                .select(Alarm::getAlarmStatus)
+                .groupBy(Alarm::getAlarmStatus);
+        if (_identity !=1)
+            lambdaQueryWrapper.eq(User::getId,_identity);
+        return alarmMapper.selectMaps(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<HashMap<String,Object>> pySelectAlarmTender(Integer _identity) {
+        List<HashMap<String,Object>> list = new ArrayList<>();
+        for (int i = 0; i<7; i++){
+            HashMap<String,Object> map= new HashMap<>();
+            String[] s = baseUtils.getLastXDays(i);
+            MPJLambdaWrapper<Alarm> mpjLambdaWrapper = makeQueryWrapperOnlyJoin()
+                    .between(Alarm::getAlarmTime,s[0],s[1]);
+            if (_identity !=1)
+                mpjLambdaWrapper.eq(User::getId,_identity);
+            map.put("date",s[0]);
+            map.put("count",alarmMapper.selectCount(mpjLambdaWrapper));
+            list.add(map);
+        }
+        return list;
+    }
+
 
     private MPJLambdaWrapper<Alarm> makeQueryWrapperOnlyJoin(){
         return new MPJLambdaWrapper<Alarm>()

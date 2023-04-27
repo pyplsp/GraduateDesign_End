@@ -34,10 +34,18 @@ public class OverviewController {
     public Result<Object> baseData(){
         Integer _identity = baseUtils.getIdentity();
         Map<String,Object> overviewMap = new HashMap<>();
+        // 基础数据
         overviewMap.put("liftNum",liftService.pySelectAllLifts(baseUtils.getIdentity()));
         overviewMap.put("internetNum",liftService.pySelectAllInternet(baseUtils.getIdentity()));
         overviewMap.put("alarmNum",alarmService.pySelectAllAlarm(_identity));
         overviewMap.put("alarmRemoveNum",alarmService.pySelectAllAlarmRemove(_identity));
+        // 饼图
+        overviewMap.put("liftTypePIe",liftService.pySelectLIftTypePie(_identity));
+        overviewMap.put("alarmTypePie",alarmService.pySelectLAlarmTypePie(_identity));
+        overviewMap.put("alarmStatusPie",alarmService.pySelectLAlarmStatusPie(_identity));
+        // 趋势图
+        overviewMap.put("alarmTender",alarmService.pySelectAlarmTender(_identity));
+
 
         return Result.success(overviewMap);
     }

@@ -99,5 +99,18 @@ public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements Li
         return liftMapper.selectJoinCount(mpjLambdaWrapper);
     }
 
+    @Override
+    public List<Map<String, Object>> pySelectLIftTypePie(Integer _identity){
+        MPJLambdaWrapper<Lift> mpjLambdaWrapper = new MPJLambdaWrapper<Lift>()
+                .select(LiftType::getLiftTypeName)
+                .select("count(*) as count")
+                .leftJoin(LiftType.class,LiftType::getId,Lift::getLiftTypeId)
+                .leftJoin(User.class,User::getId,Lift::getUserId)
+                .groupBy(LiftType::getLiftTypeName);
+        if(_identity != 1)
+            mpjLambdaWrapper.eq(User::getId,_identity);
+        return liftMapper.selectMaps(mpjLambdaWrapper);
+    }
+
 
 }

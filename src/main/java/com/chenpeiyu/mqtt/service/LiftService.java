@@ -22,4 +22,5 @@ public interface LiftService extends IService<Lift> {
 
     Long pySelectAllInternet(Integer _identity);
 
+    public List<Map<String, Object>> pySelectLIftTypePie(Integer _identity);
 }
