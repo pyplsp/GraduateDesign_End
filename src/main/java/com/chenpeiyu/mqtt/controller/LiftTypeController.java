@@ -1,5 +1,7 @@
 package com.chenpeiyu.mqtt.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.chenpeiyu.mqtt.domain.LiftType;
 import com.chenpeiyu.mqtt.service.LiftTypeService;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.chenpeiyu.mqtt.utils.Result;

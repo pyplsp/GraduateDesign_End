@@ -74,19 +74,18 @@ public class LiftServiceImpl extends ServiceImpl<LiftMapper, Lift> implements Li
     public List<Map<String,Object>> pySelectPosition(Integer _identity) {
         LambdaQueryWrapper<Lift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.select(Lift::getId,Lift::getPositionX,Lift::getPositionY);
-        if(_identity != 1){
-            lambdaQueryWrapper.ge(Lift::getUserId,_identity);
-        }
+        // 非主账号
+        if(_identity != 1)
+            lambdaQueryWrapper.eq(Lift::getUserId,_identity);
         return liftMapper.selectMaps(lambdaQueryWrapper);
     }
 
     @Override
     public Long pySelectAllLifts(Integer _identity) {
-        MPJLambdaWrapper<Lift> mpjLambdaWrapper = new MPJLambdaWrapper<Lift>()
-                .leftJoin(Lift.class,Lift::getUserId,User::getId);
+        LambdaQueryWrapper<Lift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if(_identity != 1)
-            mpjLambdaWrapper.eq(User::getId,_identity);
-        return liftMapper.selectJoinCount(mpjLambdaWrapper);
+            lambdaQueryWrapper.eq(Lift::getUserId,_identity);
+        return liftMapper.selectCount(lambdaQueryWrapper);
     }
 
     @Override

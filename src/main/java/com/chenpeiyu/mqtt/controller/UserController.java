@@ -9,6 +9,7 @@ import com.chenpeiyu.mqtt.service.UserService;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.chenpeiyu.mqtt.utils.JwtUtils;
 import com.chenpeiyu.mqtt.utils.Result;
+import com.mysql.cj.jdbc.result.UpdatableResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,6 @@ public class UserController {
         if(user != null){
             JSONObject result = new JSONObject();
             result.put("Authorization",JwtUtils.createToken(user.getId(), account, password));
-            result.put("Administrator",user.getIfAdministrators());
             result.put("userId",user.getId());
             return Result.success(result);
         }else{
@@ -41,6 +41,10 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{userId}")
+    public Result<Object> selectOne(@PathVariable Integer userId){
+        return Result.success(userService.getById(userId));
+    }
     @GetMapping("/unitName")
     public Result<Object> unitName(){
         try {
@@ -51,5 +55,22 @@ public class UserController {
         }
         return Result.fail("查询错误");
     }
+
+    @PostMapping("/psc")
+    public Result<Object> changePassword(@RequestBody String json){
+        try {
+            JSONObject jsonObj = JSON.parseObject(json);
+            User user = new User();
+            user.setId(baseUtils.getIdentity());
+            user.setPassword((String) jsonObj.get("password"));
+            userService.updateById(user);
+            return Result.success("密码修改成功");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("密码修改失败");
+
+    }
+
 
 }

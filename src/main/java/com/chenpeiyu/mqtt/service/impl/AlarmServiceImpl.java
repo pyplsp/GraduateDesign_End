@@ -31,11 +31,15 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
 
     @Override
     public IPage<AlarmDto> pySelectPage(Integer _identity,
-                                     String liftCode, String alarmTypeName, Integer alarmStatus,
+                                     Integer userId,String liftCode, String alarmTypeName, Integer alarmStatus,
                                      Integer size, Integer current) {
         MPJLambdaWrapper<Alarm> queryWrapper = makeQueryWrapper();
         if(_identity != 1)
             queryWrapper.eq(User::getId,_identity);
+        else
+            if (userId != 0)
+                // userId不为0说明前端有传确切的userId
+                queryWrapper.like(User::getId,userId);
         if(alarmStatus != null)
             queryWrapper.eq(Alarm::getAlarmStatus,alarmStatus); // 状态
         queryWrapper.like(Lift::getLiftCode,liftCode)
@@ -77,8 +81,7 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmMapper, Alarm> implements
     @Override
     public Long pySelectAllAlarmRemove(Integer _identity) {
         MPJLambdaWrapper<Alarm> mpjLambdaWrapper = makeQueryWrapperOnlyJoin();
-        mpjLambdaWrapper.eq(User::getId,_identity)
-                .between(Alarm::getAlarmStatus,-1,0);
+        mpjLambdaWrapper.between(Alarm::getAlarmStatus,-1,0);
         if(_identity != 1)
             mpjLambdaWrapper.eq(User::getId,_identity);
         return alarmMapper.selectJoinCount(mpjLambdaWrapper);

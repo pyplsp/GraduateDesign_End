@@ -21,7 +21,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public List<Map<String, Object>> pySelectUnitName(Integer _identity) {
         if (_identity == 1){
             LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.select(User::getId,User::getUnitName);
+            lambdaQueryWrapper.select(User::getId,User::getUnitName)
+                    .ne(User::getId,1);
             return userMapper.selectMaps(lambdaQueryWrapper);
         }
         return null;

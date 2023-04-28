@@ -27,8 +27,11 @@ public class AlarmController {
         String liftCode = jsonObject.getString("liftCode"); //若无返回null
         String alarmTypeName = jsonObject.getString("alarmTypeName"); //若无返回null
         Integer alarmStatus = jsonObject.getInteger("alarmStatus"); // 若无返回null (这个和getIntValue不一样)
+        Integer userId = jsonObject.getIntValue("userId"); // 若无返回0
         try {
-            return Result.success(alarmService.pySelectPage(baseUtils.getIdentity(),liftCode,alarmTypeName,alarmStatus,size,current));
+            return Result.success(alarmService.pySelectPage(
+                   baseUtils.getIdentity(),userId,liftCode,alarmTypeName,alarmStatus,size,current
+            ));
         }catch (Exception e){
             e.printStackTrace();
         }
