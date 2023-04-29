@@ -1,8 +1,11 @@
 package com.chenpeiyu.mqtt.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chenpeiyu.mqtt.dao.UserMapper;
+import com.chenpeiyu.mqtt.domain.Lift;
 import com.chenpeiyu.mqtt.domain.User;
 import com.chenpeiyu.mqtt.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +29,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return userMapper.selectMaps(lambdaQueryWrapper);
         }
         return null;
+    }
+
+    @Override
+    public IPage<User> pySelectUsers(Integer size, Integer current) {
+            return userMapper.selectPage(new Page<>(current,size),null);
     }
 }

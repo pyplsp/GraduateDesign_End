@@ -10,6 +10,7 @@ import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.chenpeiyu.mqtt.utils.JwtUtils;
 import com.chenpeiyu.mqtt.utils.Result;
 import com.mysql.cj.jdbc.result.UpdatableResultSet;
+import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,10 +42,24 @@ public class UserController {
         }
     }
 
+    // 分页获取用户列表，只有主账户可以获取
+    @GetMapping("/list")
+    public Result<Object> selectUsers(
+            @RequestParam("size") Integer size,
+            @RequestParam("current") Integer current
+    ) {
+        if (baseUtils.getIdentity() == 1){
+            return Result.success(userService.pySelectUsers(size,current));
+        }
+        return Result.fail("无权限");
+    }
+
+    // 获取单个用户信息
     @GetMapping("/{userId}")
     public Result<Object> selectOne(@PathVariable Integer userId){
         return Result.success(userService.getById(userId));
     }
+    // 获取所有的用户单位，除了主账户
     @GetMapping("/unitName")
     public Result<Object> unitName(){
         try {
@@ -56,6 +71,7 @@ public class UserController {
         return Result.fail("查询错误");
     }
 
+    // 修改密码
     @PostMapping("/psc")
     public Result<Object> changePassword(@RequestBody String json){
         try {
@@ -69,8 +85,38 @@ public class UserController {
             e.printStackTrace();
         }
         return Result.fail("密码修改失败");
-
     }
 
+    // 添加用户
+    @PostMapping
+    public Result<Object> addUser(@RequestBody User user){
+        try {
+            if (baseUtils.getIdentity() == 1){
+                userService.save(user);
+                return Result.success("添加成功");
+            }else{
+                return Result.fail("无权限");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("失败");
+    }
+
+    // 删除用户
+    @DeleteMapping("/{id}")
+    public Result<Object> deleteUser(@PathVariable Integer id){
+        try {
+            if (baseUtils.getIdentity() == 1){
+                userService.removeById(id);
+                return Result.success("删除成功");
+            }else{
+                return Result.success("无权限");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail("失败");
+    }
 
 }
