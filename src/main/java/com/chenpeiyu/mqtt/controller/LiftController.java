@@ -82,7 +82,7 @@ public class LiftController {
 
     // 更新电梯
     @PutMapping("/{id}")
-    public Result<Object> updateLift(@PathVariable Integer id,@RequestBody Lift lift){
+    public Result<Object> updateLift(@PathVariable Integer id,@RequestBody Lift lift){  
         try {
             lift.setId(id);
             lift.setUserId(baseUtils.getIdentity());

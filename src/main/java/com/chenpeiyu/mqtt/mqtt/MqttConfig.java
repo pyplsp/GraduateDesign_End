@@ -53,7 +53,7 @@ public class MqttConfig {
         MqttConnectOptions options = new MqttConnectOptions();
 
         // 设置代理端的URL地址，可以是多个
-        options.setServerURIs(new String[]{"tcp://211.159.225.217:1883"});
+        options.setServerURIs(new String[]{"tcp://175.178.47.147:1883"});
         options.setUserName("admin");
         options.setPassword("admin".toCharArray());
         factory.setConnectionOptions(options);

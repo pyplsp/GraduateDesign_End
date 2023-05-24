@@ -9,8 +9,6 @@ import com.chenpeiyu.mqtt.service.UserService;
 import com.chenpeiyu.mqtt.utils.BaseUtils;
 import com.chenpeiyu.mqtt.utils.JwtUtils;
 import com.chenpeiyu.mqtt.utils.Result;
-import com.mysql.cj.jdbc.result.UpdatableResultSet;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
