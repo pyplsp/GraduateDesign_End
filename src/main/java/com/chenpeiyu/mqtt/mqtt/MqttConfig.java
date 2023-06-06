@@ -86,7 +86,7 @@ public class MqttConfig {
         // defaultPahoMessageConverter.setPayloadAsBytes(true);
 
         adapter.setConverter(defaultPahoMessageConverter);
-        // adapter.setQos(1); // 设置QoS
+        adapter.setQos(2); // 设置QoS
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
     }
